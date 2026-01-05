@@ -1,0 +1,5 @@
+{
+  "name": "BandSync AI",
+  "description": "A centralized project management platform for music bands. Features shared schedules, individual member spaces, song management, and an AI Band Manager for optimization.",
+  "requestFramePermissions": []
+}
