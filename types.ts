@@ -33,13 +33,37 @@ export interface CalendarEvent {
   attendees: string[]; // Member IDs
 }
 
+export interface Album {
+  id: string;
+  title: string;
+  releaseDate?: string;
+  coverArt?: string;
+  description?: string;
+}
+
+export interface Link {
+  id: string;
+  label: string;
+  url: string;
+  type: 'spotify' | 'drive' | 'youtube' | 'other';
+}
+
+export type SongStatus = 'Idea' | 'Demo' | 'Polishing' | 'Ready';
+export type SongType = 'Original' | 'Cover';
+
 export interface Song {
   id: string;
   title: string;
-  status: 'Idea' | 'Demo' | 'Polishing' | 'Ready';
+  status: SongStatus;
+  type: SongType;
   bpm?: number;
   key?: string;
   lyrics?: string;
+  albumId?: string;        // Reference to Album ID
+  originalArtist?: string; // If it is a cover
+  duration?: string;
+  links?: Link[];
+  notes?: string;
 }
 
 export interface AIResponse {

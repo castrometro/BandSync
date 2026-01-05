@@ -7,17 +7,19 @@ import Members from './features/members/Members';
 import Songs from './features/songs/Songs';
 import AIManager from './features/ai/AIManager';
 import Login from './features/auth/Login';
-import { MOCK_EVENTS, MOCK_MEMBERS, MOCK_SONGS } from './constants';
+import { MOCK_EVENTS, MOCK_MEMBERS, MOCK_SONGS, MOCK_ALBUMS } from './constants';
+import { Song, Album, CalendarEvent, Member } from './types';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentView, setCurrentView] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // In a real app, these would come from an API context
-  const [events] = useState(MOCK_EVENTS);
-  const [members] = useState(MOCK_MEMBERS);
-  const [songs] = useState(MOCK_SONGS);
+  // Data State
+  const [events, setEvents] = useState<CalendarEvent[]>(MOCK_EVENTS);
+  const [members, setMembers] = useState<Member[]>(MOCK_MEMBERS);
+  const [songs, setSongs] = useState<Song[]>(MOCK_SONGS);
+  const [albums, setAlbums] = useState<Album[]>(MOCK_ALBUMS);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -30,16 +32,45 @@ function App() {
     setCurrentView('dashboard'); // Reset view on logout
   };
 
+  // Handlers
+  const handleAddSong = (newSong: Song) => {
+    setSongs(prevSongs => [...prevSongs, newSong]);
+  };
+
+  const handleUpdateSong = (updatedSong: Song) => {
+    setSongs(prevSongs => prevSongs.map(s => s.id === updatedSong.id ? updatedSong : s));
+  };
+
+  const handleAddAlbum = (newAlbum: Album) => {
+    setAlbums(prevAlbums => [...prevAlbums, newAlbum]);
+  };
+
+  const handleAddEvent = (newEvent: CalendarEvent) => {
+    setEvents(prevEvents => [...prevEvents, newEvent].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
+  };
+
+  const handleUpdateMember = (updatedMember: Member) => {
+    setMembers(prevMembers => prevMembers.map(m => m.id === updatedMember.id ? updatedMember : m));
+  };
+
   const renderContent = () => {
     switch (currentView) {
       case 'dashboard':
         return <Dashboard events={events} songs={songs} />;
       case 'calendar':
-        return <Schedule events={events} />;
+        return <Schedule events={events} onAddEvent={handleAddEvent} />;
       case 'members':
-        return <Members members={members} />;
+        return <Members members={members} onUpdateMember={handleUpdateMember} />;
       case 'songs':
-        return <Songs songs={songs} />;
+        return (
+          <Songs 
+            songs={songs} 
+            albums={albums} 
+            onAddSong={handleAddSong} 
+            onUpdateSong={handleUpdateSong}
+            onAddAlbum={handleAddAlbum} 
+          />
+        );
       case 'ai-manager':
         return <AIManager events={events} songs={songs} />;
       default:

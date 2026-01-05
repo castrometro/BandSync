@@ -1,15 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Member } from '../../types';
-import { User, Shield, CheckSquare } from 'lucide-react';
+import { User, Shield, CheckSquare, Edit2, Save, X, Plus } from 'lucide-react';
 
 interface MembersProps {
   members: Member[];
+  onUpdateMember: (member: Member) => void;
 }
 
-const Members: React.FC<MembersProps> = ({ members }) => {
-  const [selectedMemberId, setSelectedMemberId] = useState<string>(members[0].id);
+const Members: React.FC<MembersProps> = ({ members, onUpdateMember }) => {
+  const [selectedMemberId, setSelectedMemberId] = useState<string>(members[0]?.id || '');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedMember, setEditedMember] = useState<Member | null>(null);
 
   const activeMember = members.find(m => m.id === selectedMemberId) || members[0];
+
+  // Sync editedMember when selection changes
+  useEffect(() => {
+    setEditedMember(activeMember ? { ...activeMember } : null);
+    setIsEditing(false);
+  }, [activeMember]);
+
+  if (!activeMember) return <div className="p-6">No hay integrantes.</div>;
+
+  const handleSave = () => {
+    if (editedMember) {
+      onUpdateMember(editedMember);
+      setIsEditing(false);
+    }
+  };
+
+  const handleGoalChange = (index: number, value: string) => {
+    if (editedMember) {
+      const newGoals = [...editedMember.personalGoals];
+      newGoals[index] = value;
+      setEditedMember({ ...editedMember, personalGoals: newGoals });
+    }
+  };
+
+  const handleDeleteGoal = (index: number) => {
+    if (editedMember) {
+      const newGoals = editedMember.personalGoals.filter((_, i) => i !== index);
+      setEditedMember({ ...editedMember, personalGoals: newGoals });
+    }
+  };
+
+  const handleAddGoal = () => {
+    if (editedMember) {
+      setEditedMember({ ...editedMember, personalGoals: [...editedMember.personalGoals, ''] });
+    }
+  };
 
   return (
     <div className="p-6 h-full flex flex-col md:flex-row gap-6">
@@ -21,11 +60,12 @@ const Members: React.FC<MembersProps> = ({ members }) => {
             <button
               key={member.id}
               onClick={() => setSelectedMemberId(member.id)}
+              disabled={isEditing} // Prevent switching while editing to avoid data loss
               className={`w-full flex items-center gap-4 p-3 rounded-xl border transition-all ${
                 selectedMemberId === member.id 
                   ? 'bg-slate-800 border-indigo-500 shadow-md shadow-indigo-500/10' 
                   : 'bg-slate-800/50 border-transparent hover:bg-slate-800'
-              }`}
+              } ${isEditing && selectedMemberId !== member.id ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <img 
                 src={member.avatar} 
@@ -44,7 +84,7 @@ const Members: React.FC<MembersProps> = ({ members }) => {
       </div>
 
       {/* Detail View */}
-      <div className="w-full md:w-2/3 bg-slate-800 rounded-2xl border border-slate-700 p-6 flex flex-col">
+      <div className="w-full md:w-2/3 bg-slate-800 rounded-2xl border border-slate-700 p-6 flex flex-col animate-fade-in">
         <div className="flex items-center gap-6 mb-8 border-b border-slate-700 pb-6">
            <img 
              src={activeMember.avatar} 
@@ -66,23 +106,75 @@ const Members: React.FC<MembersProps> = ({ members }) => {
               <CheckSquare className="text-indigo-400" />
               Objetivos Personales
             </h3>
-            <button className="text-xs text-slate-400 hover:text-white underline">Editar</button>
+            
+            {isEditing ? (
+               <div className="flex gap-2">
+                 <button 
+                   onClick={() => setIsEditing(false)} 
+                   className="text-slate-400 hover:text-white bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-sm flex items-center gap-1 transition-colors"
+                 >
+                   <X size={14} /> Cancelar
+                 </button>
+                 <button 
+                   onClick={handleSave} 
+                   className="text-white bg-indigo-600 hover:bg-indigo-500 px-3 py-1 rounded text-sm flex items-center gap-1 shadow shadow-indigo-500/20 transition-colors"
+                 >
+                   <Save size={14} /> Guardar
+                 </button>
+               </div>
+            ) : (
+              <button 
+                onClick={() => setIsEditing(true)}
+                className="text-xs text-indigo-300 hover:text-white flex items-center gap-1 hover:bg-indigo-500/10 px-2 py-1 rounded transition-colors"
+              >
+                <Edit2 size={12} /> Editar
+              </button>
+            )}
           </div>
           
           <div className="space-y-3">
-            {activeMember.personalGoals.length > 0 ? (
-              activeMember.personalGoals.map((goal, idx) => (
-                <div key={idx} className="flex items-start gap-3 p-4 bg-slate-900/50 rounded-lg border border-slate-700/50">
-                   <div className="mt-0.5 min-w-[20px]">
-                      <div className="w-5 h-5 rounded-full border-2 border-slate-600 flex items-center justify-center hover:border-emerald-500 hover:bg-emerald-500/20 cursor-pointer transition-colors">
-                        {/* Checkbox simulated */}
-                      </div>
-                   </div>
-                   <p className="text-slate-200">{goal}</p>
-                </div>
-              ))
+            {isEditing && editedMember ? (
+              // EDIT MODE
+              <>
+                {editedMember.personalGoals.map((goal, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <input 
+                      type="text"
+                      value={goal}
+                      onChange={(e) => handleGoalChange(idx, e.target.value)}
+                      className="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white focus:border-indigo-500 outline-none text-sm"
+                      placeholder="Escribe un objetivo..."
+                    />
+                    <button 
+                      onClick={() => handleDeleteGoal(idx)}
+                      className="text-slate-500 hover:text-red-400 p-2"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+                <button 
+                  onClick={handleAddGoal}
+                  className="w-full py-2 border-2 border-dashed border-slate-700 rounded-lg text-slate-500 hover:text-indigo-400 hover:border-indigo-500/50 transition-colors flex items-center justify-center gap-2 text-sm"
+                >
+                  <Plus size={16} /> Agregar Objetivo
+                </button>
+              </>
             ) : (
-              <p className="text-slate-500 italic">No hay objetivos definidos.</p>
+              // VIEW MODE
+              activeMember.personalGoals.length > 0 ? (
+                activeMember.personalGoals.map((goal, idx) => (
+                  <div key={idx} className="flex items-start gap-3 p-4 bg-slate-900/50 rounded-lg border border-slate-700/50 group">
+                     <div className="mt-0.5 min-w-[20px]">
+                        <div className="w-5 h-5 rounded-full border-2 border-slate-600 flex items-center justify-center group-hover:border-emerald-500 group-hover:bg-emerald-500/20 cursor-default transition-colors">
+                        </div>
+                     </div>
+                     <p className="text-slate-200">{goal}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-slate-500 italic">No hay objetivos definidos.</p>
+              )
             )}
           </div>
 
@@ -92,12 +184,12 @@ const Members: React.FC<MembersProps> = ({ members }) => {
               Espacio de Trabajo
             </h3>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-slate-900/30 p-4 rounded-lg border border-slate-700/30 hover:bg-slate-900/50 cursor-pointer transition-colors text-center">
-                <span className="block text-2xl mb-1">📝</span>
+              <div className="bg-slate-900/30 p-4 rounded-lg border border-slate-700/30 hover:bg-slate-900/50 cursor-pointer transition-colors text-center group">
+                <span className="block text-2xl mb-1 group-hover:scale-110 transition-transform">📝</span>
                 <span className="text-sm text-slate-300">Notas Privadas</span>
               </div>
-              <div className="bg-slate-900/30 p-4 rounded-lg border border-slate-700/30 hover:bg-slate-900/50 cursor-pointer transition-colors text-center">
-                <span className="block text-2xl mb-1">🎵</span>
+              <div className="bg-slate-900/30 p-4 rounded-lg border border-slate-700/30 hover:bg-slate-900/50 cursor-pointer transition-colors text-center group">
+                <span className="block text-2xl mb-1 group-hover:scale-110 transition-transform">🎵</span>
                 <span className="text-sm text-slate-300">Mis Partituras</span>
               </div>
             </div>
