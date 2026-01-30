@@ -1,0 +1,10 @@
+# Compliance
+
+> Documentación de cumplimiento de estándares.
+
+Ubicar aquí documentos con formato: `[standard]-compliance.md`
+
+## Estándares comunes:
+- wcag-compliance.md (Accesibilidad)
+- gdpr-compliance.md (Privacidad EU)
+- ccpa-compliance.md (Privacidad California)

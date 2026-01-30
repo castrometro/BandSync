@@ -1,0 +1,13 @@
+# Incidents & Post-Mortems
+
+> Documentación de incidentes y análisis post-mortem.
+
+Ubicar aquí documentos con formato: `[date]-[incident-name]-postmortem.md`
+
+## Estructura de post-mortem:
+1. Resumen del incidente
+2. Timeline
+3. Causa raíz
+4. Impacto
+5. Lecciones aprendidas
+6. Acciones correctivas

@@ -1,0 +1,11 @@
+# CI/CD Pipelines
+
+> Documentación de pipelines de integración y despliegue continuo.
+
+Ubicar aquí documentos con formato: `[pipeline-name].md`
+
+## Pipelines comunes:
+- build-pipeline.md
+- test-pipeline.md
+- deploy-pipeline.md
+- release-pipeline.md

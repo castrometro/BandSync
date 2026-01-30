@@ -1,0 +1,9 @@
+# Architecture Decisions
+
+> ADRs (Architecture Decision Records).
+
+Ubicar aquí documentos con formato: `ADR-[number]-[title].md`
+
+## Ejemplo de nombrado:
+- ADR-001-uso-de-jwt.md
+- ADR-002-postgresql-vs-mongodb.md

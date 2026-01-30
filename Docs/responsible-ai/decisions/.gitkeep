@@ -1,0 +1,9 @@
+# RAI Decisions
+
+> RAI-ADRs (Responsible AI Architecture Decision Records).
+
+Ubicar aquí documentos con formato: `RAI-ADR-[number]-[title].md`
+
+## Ejemplo de nombrado:
+- RAI-ADR-001-datos-entrenamiento-anonimizados.md
+- RAI-ADR-002-explicabilidad-recomendaciones.md

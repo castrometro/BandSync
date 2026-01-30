@@ -1,0 +1,12 @@
+# Architecture Diagrams
+
+> Diagramas C4, secuencia, componentes, etc.
+
+Ubicar aquí diagramas en formato: `[nombre]-diagram.md` o `.png`
+
+## Tipos de diagramas:
+- C4 Context
+- C4 Container
+- C4 Component
+- Sequence diagrams
+- Entity Relationship

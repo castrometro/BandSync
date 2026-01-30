@@ -1,0 +1,11 @@
+# Runbooks
+
+> Guías operacionales para procedimientos comunes.
+
+Ubicar aquí documentos con formato: `[nombre]-runbook.md`
+
+## Runbooks comunes:
+- deploy-runbook.md
+- rollback-runbook.md
+- database-backup-runbook.md
+- incident-response-runbook.md

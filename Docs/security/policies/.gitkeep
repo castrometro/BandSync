@@ -1,0 +1,11 @@
+# Security Policies
+
+> Políticas y estándares de seguridad.
+
+Ubicar aquí documentos con formato: `[policy-name].md`
+
+## Políticas comunes:
+- password-policy.md
+- access-control-policy.md
+- data-protection-policy.md
+- incident-response-policy.md
